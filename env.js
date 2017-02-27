@@ -34,10 +34,15 @@ function deployExample(_cb) {
                     return;
                 }
                 sharesController = _sharesController;
+                token = web3.eth.contract(MiniMeTokenAbi).at(sharesController.contract.token());
                 console.log("Shares Controller: " + sharesController.contract.address);
                 cb1();
             });
         },
     ], cb);
-    token = web3.eth.contract(MiniMeTokenAbi).at(sharesController.contract.token());
+
 }
+
+// sharesController.contract.createTokens(web3.eth.accounts[1], 100, {from: web3.eth.accounts[0], gas: 500000})
+// token.totalSupply().toNumber()
+//
