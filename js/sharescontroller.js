@@ -80,13 +80,14 @@ export default class SharesController {
     }
 
     static deploy(web3, opts, _cb) {
+        const params = Object.assign({}, opts);
         return asyncfunc((cb) => {
-            const params = Object.assign({}, opts);
             params.parentToken = params.parentToken || 0;
             params.parentSnapShotBlock = params.parentSnapShotBlock || 0;
             params.transfersEnabled = (typeof params.transfersEnabled === "undefined") ? true : params.transfersEnabled;
             async.series([
                 (cb1) => {
+                    console.log("c1");
                     params.abi = MiniMeTokenFactoryAbi;
                     params.byteCode = MiniMeTokenFactoryByteCode;
                     deploy(web3, params, (err, _tokenFactory) => {
@@ -99,21 +100,25 @@ export default class SharesController {
                     });
                 },
                 (cb1) => {
+                    console.log("c2");
                     params.abi = MiniMeTokenAbi;
                     params.byteCode = MiniMeTokenByteCode;
-                    deploy(web3, params, cb1, (err, _token) => {
+                    deploy(web3, params, (err, _token) => {
                         if (err) {
                             cb1(err);
                             return;
                         }
+
                         params.tokenAddr = _token.address;
+                        console.log("MMT:" +  params.tokenAddr);
                         cb1();
                     });
                 },
                 (cb1) => {
+                    console.log("c3");
                     params.abi = KWCAbi;
                     params.byteCode = KWCByteCode;
-                    deploy(web3, params, cb1, (err, _kwc) => {
+                    deploy(web3, params, (err, _kwc) => {
                         if (err) {
                             cb1(err);
                             return;
@@ -123,9 +128,10 @@ export default class SharesController {
                     });
                 },
                 (cb1) => {
+                    console.log("c4");
                     params.abi = SharesControllerAbi;
                     params.byteCode = SharesControllerByteCode;
-                    deploy(web3, params, cb1, (err, _sharesController) => {
+                    deploy(web3, params, (err, _sharesController) => {
                         if (err) {
                             cb1(err);
                             return;
@@ -135,12 +141,15 @@ export default class SharesController {
                     });
                 },
                 (cb1) => {
+                    console.log("c5");
+
                     const minime = web3.eth.contract(MiniMeTokenAbi).at(params.tokenAddr);
                     minime.changeController(params.sharesController,
                         { from: web3.eth.accounts[ 0 ] }, cb1);
                 },
             ],
             (err) => {
+                console.log("c6");
                 if (err) {
                     cb(err);
                     return;

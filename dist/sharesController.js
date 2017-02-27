@@ -133,12 +133,13 @@ var SharesController = function () {
     }], [{
         key: "deploy",
         value: function deploy(web3, opts, _cb) {
+            var params = Object.assign({}, opts);
             return (0, _runethtx.asyncfunc)(function (cb) {
-                var params = Object.assign({}, opts);
                 params.parentToken = params.parentToken || 0;
                 params.parentSnapShotBlock = params.parentSnapShotBlock || 0;
                 params.transfersEnabled = typeof params.transfersEnabled === "undefined" ? true : params.transfersEnabled;
                 _async2.default.series([function (cb1) {
+                    console.log("c1");
                     params.abi = _MiniMeTokenSol.MiniMeTokenFactoryAbi;
                     params.byteCode = _MiniMeTokenSol.MiniMeTokenFactoryByteCode;
                     (0, _runethtx.deploy)(web3, params, function (err, _tokenFactory) {
@@ -150,20 +151,24 @@ var SharesController = function () {
                         cb1();
                     });
                 }, function (cb1) {
+                    console.log("c2");
                     params.abi = _MiniMeTokenSol.MiniMeTokenAbi;
                     params.byteCode = _MiniMeTokenSol.MiniMeTokenByteCode;
-                    (0, _runethtx.deploy)(web3, params, cb1, function (err, _token) {
+                    (0, _runethtx.deploy)(web3, params, function (err, _token) {
                         if (err) {
                             cb1(err);
                             return;
                         }
+
                         params.tokenAddr = _token.address;
+                        console.log("MMT:" + params.tokenAddr);
                         cb1();
                     });
                 }, function (cb1) {
+                    console.log("c3");
                     params.abi = _KWCSol.KWCAbi;
                     params.byteCode = _KWCSol.KWCByteCode;
-                    (0, _runethtx.deploy)(web3, params, cb1, function (err, _kwc) {
+                    (0, _runethtx.deploy)(web3, params, function (err, _kwc) {
                         if (err) {
                             cb1(err);
                             return;
@@ -172,9 +177,10 @@ var SharesController = function () {
                         cb1();
                     });
                 }, function (cb1) {
+                    console.log("c4");
                     params.abi = _SharesControllerSol.SharesControllerAbi;
                     params.byteCode = _SharesControllerSol.SharesControllerByteCode;
-                    (0, _runethtx.deploy)(web3, params, cb1, function (err, _sharesController) {
+                    (0, _runethtx.deploy)(web3, params, function (err, _sharesController) {
                         if (err) {
                             cb1(err);
                             return;
@@ -183,9 +189,12 @@ var SharesController = function () {
                         cb1();
                     });
                 }, function (cb1) {
+                    console.log("c5");
+
                     var minime = web3.eth.contract(_MiniMeTokenSol.MiniMeTokenAbi).at(params.tokenAddr);
                     minime.changeController(params.sharesController, { from: web3.eth.accounts[0] }, cb1);
                 }], function (err) {
+                    console.log("c6");
                     if (err) {
                         cb(err);
                         return;

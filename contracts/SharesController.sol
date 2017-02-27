@@ -15,8 +15,8 @@ contract SharesController is TokenController, Owned {
 
     Transfer[] public transfers;
 
-    MiniMeToken token;
-    KWC kwc;
+    MiniMeToken public token;
+    KWC public kwc;
 
     bool enableTransfers;
 

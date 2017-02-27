@@ -5,7 +5,8 @@ const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 const async = require("async");
 
-const SharesController = require("./dist/sharescontroller.js");
+const SharesController = require("./dist/sharesController.js");
+const MiniMeTokenAbi = require("./contracts/MiniMeToken.sol.js").MiniMeTokenAbi;
 
 const gcb = (err, res) => {
     if (err) {
@@ -16,6 +17,7 @@ const gcb = (err, res) => {
 };
 
 let sharesController;
+let token;
 
 function deployExample(_cb) {
     const cb = _cb || gcb;
@@ -26,6 +28,7 @@ function deployExample(_cb) {
                 decimalUnits: 0,
                 tokenSymbol: "BST",
             }, (err, _sharesController) => {
+                console.log("xx");
                 if (err) {
                     cb1(err);
                     return;
@@ -36,4 +39,5 @@ function deployExample(_cb) {
             });
         },
     ], cb);
+    token = web3.eth.contract(MiniMeTokenAbi).at(sharesController.contract.token());
 }
